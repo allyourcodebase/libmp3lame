@@ -1,3 +1,11 @@
+This is a fork of [lame](https://lame.sourceforge.io/), packaged for Zig.
+Unnecessary files have been deleted, and the build system has been replaced
+with `build.zig`.
+
+Original README follows:
+
+============================================================================
+
                       LAME 3.xx
                LAME Ain't an MP3 Encoder
                   http://lame.sf.net
