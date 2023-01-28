@@ -2,7 +2,7 @@ const std = @import("std");
 
 pub fn build(b: *std.build.Builder) void {
     const target = b.standardTargetOptions(.{});
-    const mode = b.standardReleaseOptions();
+    const optimize = b.standardOptimizeOption(.{});
 
     const version = "3.100";
     const config_h = b.addConfigHeader(.{ .path = "config.h.in" }, .autoconf, .{
@@ -109,9 +109,11 @@ pub fn build(b: *std.build.Builder) void {
         .size_t = null,
     });
 
-    const lib = b.addStaticLibrary("mp3lame", null);
-    lib.setTarget(target);
-    lib.setBuildMode(mode);
+    const lib = b.addStaticLibrary(.{
+        .name = "mp3lame",
+        .target = target,
+        .optimize = optimize,
+    });
     lib.linkLibC();
     lib.addConfigHeader(config_h);
     lib.addIncludePath("include");
