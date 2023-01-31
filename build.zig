@@ -1,11 +1,18 @@
 const std = @import("std");
+const version = "3.100";
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const version = "3.100";
-    const config_h = b.addConfigHeader(.{ .path = "config.h.in" }, .autoconf, .{
+    const lib = b.addStaticLibrary(.{
+        .name = "mp3lame",
+        .target = target,
+        .optimize = optimize,
+    });
+    const t = lib.target_info.target;
+
+    lib.addConfigHeader(b.addConfigHeader(.{ .path = "config.h.in" }, .autoconf, .{
         .ABORTFP = null,
         .AC_APPLE_UNIVERSAL_BUILD = null,
         .CRAY_STACKSEG_END = null,
@@ -23,7 +30,7 @@ pub fn build(b: *std.build.Builder) void {
         .HAVE_ICONV = null,
         .HAVE_IEEE754_FLOAT32_T = null,
         .HAVE_IEEE754_FLOAT64_T = null,
-        .HAVE_IEEE854_FLOAT80 = null, // TODO: detect based on target
+        .HAVE_IEEE854_FLOAT80 = have(t.c_type_bit_size(.longdouble) == 80),
         .HAVE_IEEE854_FLOAT80_T = null,
         .HAVE_INT16_T = 1,
         .HAVE_INT32_T = 1,
@@ -35,7 +42,7 @@ pub fn build(b: *std.build.Builder) void {
         .HAVE_LIMITS_H = 1,
         .HAVE_LINUX_SOUNDCARD_H = null,
         .HAVE_LONG_DOUBLE = 1,
-        .HAVE_LONG_DOUBLE_WIDER = null, // TODO: detect based on target
+        .HAVE_LONG_DOUBLE_WIDER = have(t.c_type_bit_size(.longdouble) > t.c_type_bit_size(.double)),
         .HAVE_MEMORY_H = 1,
         .HAVE_MPGLIB = 1,
         .HAVE_NASM = null,
@@ -59,7 +66,10 @@ pub fn build(b: *std.build.Builder) void {
         .A_UINT64_T = .uint64_t,
         .HAVE_UINT8_T = 1,
         .HAVE_UNISTD_H = 1,
-        .HAVE_XMMINTRIN_H = 1, // TODO: detect based on target
+        .HAVE_XMMINTRIN_H = have(switch (t.cpu.arch) {
+            .x86, .x86_64 => true,
+            else => false,
+        }),
         .ICONV_CONST = {},
         .LAME_LIBRARY_BUILD = 1,
         .LIBSNDFILE = null,
@@ -73,17 +83,17 @@ pub fn build(b: *std.build.Builder) void {
         .PACKAGE_TARNAME = "lame",
         .PACKAGE_URL = "https://lame.sourceforge.io/",
         .PACKAGE_VERSION = version,
-        .SIZEOF_DOUBLE = 8, // TODO detect based on target
-        .SIZEOF_FLOAT = 4, // TODO detect based on target
-        .SIZEOF_INT = 4, // TODO detect based on target
-        .SIZEOF_LONG = 8, // TODO detect based on target
-        .SIZEOF_LONG_DOUBLE = 8, // TODO detect based on target
-        .SIZEOF_LONG_LONG = 8, // TODO detect based on target
-        .SIZEOF_SHORT = 2, // TODO detect based on target
-        .SIZEOF_UNSIGNED_INT = 4, // TODO detect based on target
-        .SIZEOF_UNSIGNED_LONG = 8, // TODO detect based on target
-        .SIZEOF_UNSIGNED_LONG_LONG = 8, // TODO detect based on target
-        .SIZEOF_UNSIGNED_SHORT = 2, // TODO detect based on target
+        .SIZEOF_DOUBLE = t.c_type_byte_size(.double),
+        .SIZEOF_FLOAT = t.c_type_byte_size(.float),
+        .SIZEOF_INT = t.c_type_byte_size(.int),
+        .SIZEOF_LONG = t.c_type_byte_size(.long),
+        .SIZEOF_LONG_DOUBLE = t.c_type_byte_size(.longdouble),
+        .SIZEOF_LONG_LONG = t.c_type_byte_size(.longlong),
+        .SIZEOF_SHORT = t.c_type_byte_size(.short),
+        .SIZEOF_UNSIGNED_INT = t.c_type_byte_size(.uint),
+        .SIZEOF_UNSIGNED_LONG = t.c_type_byte_size(.ulong),
+        .SIZEOF_UNSIGNED_LONG_LONG = t.c_type_byte_size(.ulonglong),
+        .SIZEOF_UNSIGNED_SHORT = t.c_type_byte_size(.ushort),
         .STACK_DIRECTION = null,
         .STDC_HEADERS = 1,
         .TAKEHIRO_IEEE754_HACK = 1,
@@ -94,7 +104,7 @@ pub fn build(b: *std.build.Builder) void {
         ._POSIX_PTHREAD_SEMANTICS = 1,
         ._TANDEM_SOURCE = 1,
         .__EXTENSIONS__ = 1,
-        .WORDS_BIGENDIAN = null, // TODO detect based on target
+        .WORDS_BIGENDIAN = have(t.cpu.arch.endian() == .Big),
         .VERSION = version,
         .WITH_DMALLOC = null,
         ._FILE_OFFSET_BITS = null,
@@ -107,15 +117,7 @@ pub fn build(b: *std.build.Builder) void {
         .@"const" = null,
         .@"inline" = null,
         .size_t = null,
-    });
-
-    const lib = b.addStaticLibrary(.{
-        .name = "mp3lame",
-        .target = target,
-        .optimize = optimize,
-    });
-    lib.linkLibC();
-    lib.addConfigHeader(config_h);
+    }));
     lib.addIncludePath("include");
     lib.addIncludePath("libmp3lame");
     lib.addIncludePath("mpglib");
@@ -153,6 +155,15 @@ pub fn build(b: *std.build.Builder) void {
     }, &.{
         "-DHAVE_CONFIG_H",
     });
+    lib.linkLibC();
     lib.install();
     lib.installHeadersDirectory("include", "lame");
+}
+
+fn have(condition: bool) ?c_int {
+    if (condition) {
+        return 1;
+    } else {
+        return null;
+    }
 }
