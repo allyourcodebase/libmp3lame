@@ -12,7 +12,9 @@ pub fn build(b: *std.Build) void {
     });
     const t = lib.target_info.target;
 
-    const config_header = b.addConfigHeader(.{ .autoconf = .{ .path = "config.h.in" } }, .{
+    const config_header = b.addConfigHeader(.{
+        .style = .{ .autoconf = .{ .path = "config.h.in" } },
+    }, .{
         .ABORTFP = null,
         .AC_APPLE_UNIVERSAL_BUILD = null,
         .CRAY_STACKSEG_END = null,
