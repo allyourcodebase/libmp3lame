@@ -12,7 +12,7 @@ pub fn build(b: *std.Build) void {
     });
     const t = lib.target_info.target;
 
-    lib.addConfigHeader(b.addConfigHeader(.{ .path = "config.h.in" }, .autoconf, .{
+    const config_header = b.addConfigHeader(.{ .autoconf = .{ .path = "config.h.in" } }, .{
         .ABORTFP = null,
         .AC_APPLE_UNIVERSAL_BUILD = null,
         .CRAY_STACKSEG_END = null,
@@ -117,7 +117,8 @@ pub fn build(b: *std.Build) void {
         .@"const" = null,
         .@"inline" = null,
         .size_t = null,
-    }));
+    });
+    lib.addConfigHeader(config_header);
     lib.addIncludePath("include");
     lib.addIncludePath("libmp3lame");
     lib.addIncludePath("mpglib");
