@@ -159,8 +159,8 @@ pub fn build(b: *std.Build) void {
         "-DHAVE_CONFIG_H",
     });
     lib.linkLibC();
-    lib.install();
     lib.installHeadersDirectory("include", "lame");
+    b.installArtifact(lib);
 }
 
 fn have(condition: bool) ?c_int {
