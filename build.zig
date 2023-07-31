@@ -121,9 +121,9 @@ pub fn build(b: *std.Build) void {
         .size_t = null,
     });
     lib.addConfigHeader(config_header);
-    lib.addIncludePath("include");
-    lib.addIncludePath("libmp3lame");
-    lib.addIncludePath("mpglib");
+    lib.addIncludePath(.{ .path = "include" });
+    lib.addIncludePath(.{ .path = "libmp3lame" });
+    lib.addIncludePath(.{ .path = "mpglib" });
     lib.addCSourceFiles(&.{
         "libmp3lame/VbrTag.c",
         "libmp3lame/bitstream.c",
