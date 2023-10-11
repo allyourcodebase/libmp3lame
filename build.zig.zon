@@ -1,0 +1,14 @@
+.{
+    .name = "libmp3lame",
+    .version = "3.100.0",
+    .paths = .{
+        "COPYING",
+        "LICENSE",
+        "README",
+        "build.zig",
+        "config.h.in",
+        "include",
+        "libmp3lame",
+        "mpglib",
+    },
+}
