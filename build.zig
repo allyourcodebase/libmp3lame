@@ -106,7 +106,7 @@ pub fn build(b: *std.Build) void {
         ._POSIX_PTHREAD_SEMANTICS = 1,
         ._TANDEM_SOURCE = 1,
         .__EXTENSIONS__ = 1,
-        .WORDS_BIGENDIAN = have(t.cpu.arch.endian() == .Big),
+        .WORDS_BIGENDIAN = have(t.cpu.arch.endian() == .big),
         .VERSION = version,
         .WITH_DMALLOC = null,
         ._FILE_OFFSET_BITS = null,
