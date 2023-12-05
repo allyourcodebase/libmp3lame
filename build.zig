@@ -4,13 +4,13 @@ const version = "3.100";
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
+    const t = target.result;
 
     const lib = b.addStaticLibrary(.{
         .name = "mp3lame",
         .target = target,
         .optimize = optimize,
     });
-    const t = lib.target_info.target;
 
     const config_header = b.addConfigHeader(.{
         .style = .{ .autoconf = .{ .path = "config.h.in" } },
