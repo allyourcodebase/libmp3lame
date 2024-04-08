@@ -162,7 +162,7 @@ pub fn build(b: *std.Build) void {
         },
     });
     lib.linkLibC();
-    lib.installHeadersDirectory("include", "lame");
+    lib.installHeadersDirectory(.{ .path = "include" }, "lame", .{});
     b.installArtifact(lib);
 }
 
