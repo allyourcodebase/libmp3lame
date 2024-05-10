@@ -13,7 +13,7 @@ pub fn build(b: *std.Build) void {
     });
 
     const config_header = b.addConfigHeader(.{
-        .style = .{ .autoconf = .{ .path = "config.h.in" } },
+        .style = .{ .autoconf = b.path("config.h.in") },
     }, .{
         .ABORTFP = null,
         .AC_APPLE_UNIVERSAL_BUILD = null,
@@ -121,9 +121,9 @@ pub fn build(b: *std.Build) void {
         .size_t = null,
     });
     lib.addConfigHeader(config_header);
-    lib.addIncludePath(.{ .path = "include" });
-    lib.addIncludePath(.{ .path = "libmp3lame" });
-    lib.addIncludePath(.{ .path = "mpglib" });
+    lib.addIncludePath(b.path("include"));
+    lib.addIncludePath(b.path("libmp3lame"));
+    lib.addIncludePath(b.path("mpglib"));
     lib.addCSourceFiles(.{
         .files = &.{
             "libmp3lame/VbrTag.c",
@@ -162,7 +162,7 @@ pub fn build(b: *std.Build) void {
         },
     });
     lib.linkLibC();
-    lib.installHeadersDirectory(.{ .path = "include" }, "lame", .{});
+    lib.installHeadersDirectory(b.path("include"), "lame", .{});
     b.installArtifact(lib);
 }
 
