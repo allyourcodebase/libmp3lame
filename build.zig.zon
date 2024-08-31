@@ -1,6 +1,6 @@
 .{
     .name = "libmp3lame",
-    .minimum_zig_version = "0.12.0",
+    .minimum_zig_version = "0.14.0-dev.1359+e9a00ba7f",
     .version = "3.100.1-3",
     .paths = .{
         "COPYING",
