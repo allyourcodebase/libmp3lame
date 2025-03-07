@@ -1,7 +1,8 @@
 .{
-    .name = "libmp3lame",
-    .minimum_zig_version = "0.14.0-dev.1359+e9a00ba7f",
-    .version = "3.100.1-4",
+    .name = .libmp3lame,
+    .version = "3.100.1-5",
+    .fingerprint = 0x98f397921725bceb,
+    .minimum_zig_version = "0.14.0",
     .paths = .{
         "COPYING",
         "LICENSE",
