@@ -6,14 +6,17 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
     const t = target.result;
 
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "mp3lame",
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+        }),
+        .linkage = .static,
     });
 
     const config_header = b.addConfigHeader(.{
-        .style = .{ .autoconf = b.path("config.h.in") },
+        .style = .{ .autoconf_undef = b.path("config.h.in") },
     }, .{
         .ABORTFP = null,
         .AC_APPLE_UNIVERSAL_BUILD = null,
