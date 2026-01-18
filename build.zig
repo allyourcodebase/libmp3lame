@@ -11,6 +11,7 @@ pub fn build(b: *std.Build) void {
         .root_module = b.createModule(.{
             .target = target,
             .optimize = optimize,
+            .link_libc = true,
         }),
         .linkage = .static,
     });
@@ -123,11 +124,11 @@ pub fn build(b: *std.Build) void {
         .@"inline" = null,
         .size_t = null,
     });
-    lib.addConfigHeader(config_header);
-    lib.addIncludePath(b.path("include"));
-    lib.addIncludePath(b.path("libmp3lame"));
-    lib.addIncludePath(b.path("mpglib"));
-    lib.addCSourceFiles(.{
+    lib.root_module.addConfigHeader(config_header);
+    lib.root_module.addIncludePath(b.path("include"));
+    lib.root_module.addIncludePath(b.path("libmp3lame"));
+    lib.root_module.addIncludePath(b.path("mpglib"));
+    lib.root_module.addCSourceFiles(.{
         .files = &.{
             "libmp3lame/VbrTag.c",
             "libmp3lame/bitstream.c",
@@ -164,7 +165,6 @@ pub fn build(b: *std.Build) void {
             "-DHAVE_CONFIG_H",
         },
     });
-    lib.linkLibC();
     lib.installHeadersDirectory(b.path("include"), "lame", .{});
     b.installArtifact(lib);
 }
