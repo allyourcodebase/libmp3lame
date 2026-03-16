@@ -8,6 +8,7 @@
         "LICENSE",
         "README",
         "build.zig",
+        "build.zig.zon",
         "config.h.in",
         "include",
         "libmp3lame",
